@@ -1,9 +1,4 @@
 import type { Document, Chapter } from "./types"
-import * as pdfjsLib from "pdfjs-dist"
-
-if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://unpkg.com/pdfjs-dist@5.4.530/build/pdf.worker.min.mjs"
-}
 
 // Supported file formats with metadata
 export const SUPPORTED_FORMATS = [
@@ -165,6 +160,11 @@ export async function parseTextFile(file: File): Promise<Document> {
 }
 
 export async function parsePdfFile(file: File): Promise<Document> {
+  const pdfjsLib = await import("pdfjs-dist")
+
+  // Set worker source after dynamic import
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://unpkg.com/pdfjs-dist@5.4.530/build/pdf.worker.min.mjs"
+
   const arrayBuffer = await file.arrayBuffer()
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
 
